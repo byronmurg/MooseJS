@@ -28,22 +28,22 @@ $ npm install moosejs
 const MooseJS = require('moosejs')
 
 class Student extends MooseJS.defineClass({
-	final: true,
-	has: {
-		name:   { is:"ro", isa:String,   required:true },
-		grades: { is:"rw", isa:[Number], required:true, default:[] },
-		school: { is:"rw", isa:School,   enumerable:false },
-	}
+    final: true,
+    has: {
+        name:   { is:"ro", isa:String,   required:true },
+        grades: { is:"rw", isa:[Number], required:true, default:[] },
+        school: { is:"rw", isa:School,   enumerable:false },
+    }
 })
 {
-	get grade_average(){
-		return grades.reduce((a, b) => a + b) / grades.length
-	}
+    get grade_average(){
+        return grades.reduce((a, b) => a + b) / grades.length
+    }
 }
 
 const bob = new Student({
-	name:"Bob McBobson",
-	grades: [1.0, 1.2, 0.8]
+    name:"Bob McBobson",
+    grades: [1.0, 1.2, 0.8]
 })
 
 bob.grades.push({ a:1 }) // Err. Exception thrown!
@@ -64,9 +64,9 @@ const evilBob = new Student( JSON.parse( JSON.stringify( bob ) ) ) // Fully copi
 
 const DateArray = new MooseJS.TypedArray(String)
 
-const birthdays = new DateArray(['1982-05-20']) // Automatically converted.
-birthdays.push('1971-05-05') // Yep this too.
-birthdays[2] = '1997-01-04') // And this!
+const birthdays = new DateArray(['1982-05-20'])           // Automatically converted.
+birthdays.push('2011-09-12T21:25:41')                     // Yep this too.
+birthdays[2] = 'Wed Sep 12 2018 21:25:41 GMT+0100 (BST)') // And this!
 
 ```
 
@@ -75,13 +75,13 @@ birthdays[2] = '1997-01-04') // And this!
 ```js
 
 const Account = MooseJS.defineInterface({
-	members: ["withdraw"]
+    members: ["withdraw"]
 })
 
 class DummyAccount extends Account {
-	withdraw(amount){
-		console.debug("I'm just a dummy :(")
-	}
+    withdraw(amount){
+        console.debug("I'm just a dummy :(")
+    }
 };
 
 
@@ -90,25 +90,25 @@ const dummy2 = new DummyAccount() // Class doesn't need to be checked twice than
 
 
 const Person = MooseJS.defineInterface({
-	members: ['sayHi'],
-	properties: {
-		dateOfBirth: Date,
-	}
+    members: ['sayHi'],
+    properties: {
+        dateOfBirth: Date,
+    }
 })
 
 const Employee extends MooseJS.defineClass({
-	extends: Person,
-	final:true,
-	has: {
-		name:        { is:"rw", isa:String, required:true },
-		 // This fulfills Person dateOfBirth requirement due to being a required Date of the correct name.
-		dateOfBirth: { is:"ro", isa:Date,   required:true },
-	}
+    extends: Person,
+    final:true,
+    has: {
+        name:        { is:"rw", isa:String, required:true },
+         // This fulfills Person dateOfBirth requirement due to being a required Date of the correct name.
+        dateOfBirth: { is:"ro", isa:Date,   required:true },
+    }
 })
 {
-	sahHi(){
-		return `Hello I'm ${this.name}`;
-	}
+    sahHi(){
+        return `Hello I'm ${this.name}`;
+    }
 }
 
 ```
