@@ -1,0 +1,24 @@
+{
+  "name": "moosejs",
+  "version": "1.0.0",
+  "description": "A postmodern object system for JavaScript",
+  "main": "Moose.js",
+  "scripts": {
+    "test": "tests/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/byronmurg/MooseJS.git"
+  },
+  "keywords": [
+    "oop",
+    "types",
+    "interface"
+  ],
+  "author": "Byron Murgatroyd",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/byronmurg/MooseJS/issues"
+  },
+  "homepage": "https://github.com/byronmurg/MooseJS#readme"
+}
