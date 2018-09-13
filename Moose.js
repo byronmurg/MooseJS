@@ -116,7 +116,7 @@ function defineInterface(options){
 				throw Error(`Property ${property} is not required in ${className(obj)} to conform to interface.`);
 			};
 
-			if (!(classProperty.isa == propertyType || propertyType.isInstanceOf(classProperty.isa))){
+			if (!(classProperty.isa == propertyType || propertyType.prototype instanceof classProperty.isa)){
 				throw TypeError(`Property ${property} of ${className(obj)} must be type ${propertyType.name} to conform to interface.`);
 			};
 		};

@@ -71,7 +71,7 @@ Test.section("Moose interface tests", (test) => {
 	}
 
 	test.check_safe("Valid class instanciates", () =>  new CheckingAccount({ name:"myAccount" }));
-	test.check_safe("Invalid class fails", () =>  new InvalidAccount({ name:"myAccount" }));
+	test.check_exception("Invalid class fails", () =>  new InvalidAccount({ name:"myAccount" }));
 
 });
 
