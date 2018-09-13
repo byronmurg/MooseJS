@@ -104,7 +104,7 @@ const Person = MooseJS.defineInterface({
     }
 })
 
-const Employee extends MooseJS.defineClass({
+class Employee extends MooseJS.defineClass({
     extends: Person,
     final:true,
     has: {

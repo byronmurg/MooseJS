@@ -70,6 +70,21 @@ function TypedArray(type){
 	};
 };
 
+function createClass(construct, parent){
+	return (parent)
+		? class extends parent {
+			constructor(...args){
+				super(...args);
+				return construct.call(this, ...args);
+			}
+		}
+		: class {
+			constructor(...args){
+				return construct.call(this, ...args);
+			}	
+		};
+}
+
 function defineInterface(options){
 	options = options || {};
 	const members = options.members || [];
@@ -115,23 +130,13 @@ function defineInterface(options){
 		}
 	};
 
-	function construct(obj){
-		checkNotInvoked(obj);
-		checkClass(obj);
+	function construct(){
+		checkNotInvoked(this);
+		checkClass(this);
+		return this;
 	};
 
-	const inter = (options.extends)
-		? class extends options.extends {
-			constructor(...args){
-				super(...args);
-				construct(this);
-			}
-		}
-		: class {
-			constructor(){
-				construct(this);
-			}	
-		};
+	const inter = createClass(construct, options.extends);
 
 	return inter;
 };
@@ -305,23 +310,14 @@ const defineClass = function(options){
 		}
 	};
 
-	return (options.extends)
-		? class extends options.extends {
-			constructor(initialValues, ...args){
-				super(initialValues, ...args);
-				defineProperties.call(this, initialValues);
-				return new Proxy(this, accessors);
-			};
+	function construct(initialValues){
+		defineProperties.call(this, initialValues);
+		return new Proxy(this, accessors);
+	}
 
-			static get __class_properties(){return allProperties;};
-		}
-		: class {
-			constructor(initialValues){
-				defineProperties.call(this, initialValues);
-				return new Proxy(this, accessors);
-			};
-			static get __class_properties(){return properties;};
-		};
+	const newClass = createClass(construct, options.extends);
+	newClass.__class_properties = allProperties;
+	return newClass;
 };
 
 return { defineClass, TypedArray, defineInterface };

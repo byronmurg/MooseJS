@@ -58,7 +58,20 @@ Test.section("Moose interface tests", (test) => {
 		}
 	}
 
-	const myAccount = new CheckingAccount({ name:"myAccount" });
+	class InvalidAccount extends MooseJS.defineClass({
+		extends: Account,
+		has: {
+			name: { is:"rw", isa:Number, required:true },
+		}
+	})
+	{
+		withdraw(){
+			
+		}
+	}
+
+	test.check_safe("Valid class instanciates", () =>  new CheckingAccount({ name:"myAccount" }));
+	test.check_safe("Invalid class fails", () =>  new InvalidAccount({ name:"myAccount" }));
 
 });
 

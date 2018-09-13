@@ -23,6 +23,16 @@ class SubTest {
 		this.result_message(name, false);
 	}
 
+	check_safe(name, code){
+		try {
+			code();
+			this.result_message(name, true);
+		} catch (e){
+			this.result_message(name, false);
+			throw e;
+		}
+	}
+
 	check_true(name, code){
 		this.result_message(name, (code instanceof Function) ? code() : code);
 	}
@@ -33,12 +43,7 @@ class Test {
 	static section(name, code){
 		const subtest = new SubTest();
 		console.log(`--- ${name} test ---`)
-		try {
-			code(subtest);
-		} catch (e) {
-			console.error(`Uncaught exception in test ${subtest.name} no:${subtest.count} => ${e.message}`);
-			return;
-		}
+		code(subtest);
 		console.log(``)
 	}
 };
