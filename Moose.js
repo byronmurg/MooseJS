@@ -272,7 +272,7 @@ const defineClass = function(options){
 
 			if (property && property.trigger){
 				try {
-					property.runTrigger(obj, obj[prop]);
+					property.runTrigger(obj, obj[prop], oldValue);
 				} catch (e) {
 					obj[prop] = oldValue;
 					throw e;
@@ -284,6 +284,7 @@ const defineClass = function(options){
 		
 		deleteProperty(obj, prop){
 			const property = properties[prop];
+			const oldValue = obj[prop];
 			if (property){
 				property.checkDelete(obj);
 			};
@@ -291,7 +292,7 @@ const defineClass = function(options){
 			delete obj[prop];
 
 			if (property){
-				property.runTrigger(this, undefined);
+				property.runTrigger(this, undefined, oldValue);
 			};
 			return true;
 		},

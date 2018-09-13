@@ -7,5 +7,6 @@ const tests = [
 	'undefined.js',
 	'does_it_play_nice.js',
 	'interface.js',
+	'numbers.js',
 ].map((t) => require(`./${t}`));
 

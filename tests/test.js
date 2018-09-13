@@ -85,16 +85,16 @@ Test.section("Property Types", (test) => {
 
 
 Test.section("Invalid operations", (test) => {
-	const lucy = new Person({ name:"Lucy", dob:"1987-06-28" }) ;
-	lucy.name += " Pickford";
+	const testina = new Person({ name:"Testina", dob:"1987-06-28" }) ;
+	testina.name += " McTesterson";
 
-	test.check_exception("Pushing invalid Doggo", () => lucy.dogs.push({ name:"Mable", type:"rabbit" }));
-	test.check_exception("Setting invalid property", () => lucy.cuteness = 10)
+	test.check_exception("Pushing invalid Doggo", () => testina.dogs.push({ name:"Mable", type:"rabbit" }));
+	test.check_exception("Setting invalid property", () => testina.cuteness = 10)
 
-	test.check_exception("Unsetting required name", () => lucy.name = undefined);
-	test.check_exception("Deleting required name", () => delete lucy.name);
+	test.check_exception("Unsetting required name", () => testina.name = undefined);
+	test.check_exception("Deleting required name", () => delete testina.name);
 
-	test.check_exception("Setting ro date", () => lucy.dob = new Date());
+	test.check_exception("Setting ro date", () => testina.dob = new Date());
 })
 
 
@@ -108,29 +108,4 @@ Test.section("Serialization", (test) => {
 
 	test.check_true("Copied person is identical to original person", JSON.stringify(testyMcTesterson) == JSON.stringify(testyMcTesterson2));
 })
-
-
-//dumpPerson(byron);
-//dumpPerson(lucy);
-
-function dumpProperties(classObject){
-	const props = classObject.__class_properties;
-	for ( const prop in props ){
-		console.log(" prop ", props[prop].name)
-	}
-}
-
-function dumpPerson(person){
-	console.log(`\x1b[92m--- Dumping person '${person.name}' ---\x1b[0m\n`)
-
-	console.log("--- start loop ---")
-	for ( const key in person ){
-		console.log(key.padEnd(6), " = ", person[key])
-	}
-	console.log("--- end loop ---\n")
-
-	console.log("As String = ", person, "\n")
-	console.log("As JSON   = ", JSON.stringify(person, null, 4), "\n")
-}
-
 
