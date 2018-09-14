@@ -99,7 +99,7 @@ function defineInterface(options){
 
 		for (const member of members){
 			if (! obj.__proto__[member] || obj.__proto__[member].constructor != Function){
-				throw TypeError(`Interface member ${member} not defined in ${className(obj)}`);
+				throw TypeError(`Interface member "${member}" not defined in "${className(obj)}"`);
 			}
 		};
 
@@ -109,15 +109,15 @@ function defineInterface(options){
 			const classProperty = classProperties[property];
 
 			if (!classProperty){
-				throw Error(`Property ${property} not defined in ${className(obj)}`);
+				throw Error(`Property "${property}" not defined in "${className(obj)}"`);
 			};
 
 			if (!classProperty.required){
-				throw Error(`Property ${property} is not required in ${className(obj)} to conform to interface.`);
+				throw Error(`Property "${property}" is not required in "${className(obj)}" to conform to interface`);
 			};
 
 			if (!(classProperty.isa == propertyType || propertyType.prototype instanceof classProperty.isa)){
-				throw TypeError(`Property ${property} of ${className(obj)} must be type ${propertyType.name} to conform to interface.`);
+				throw TypeError(`Property "${property}" of "${className(obj)}" must be type "${propertyType.name}" to conform to interface`);
 			};
 		};
 
@@ -126,7 +126,7 @@ function defineInterface(options){
 
 	function checkNotInvoked(obj){
 		if (obj.constructor == inter){
-			throw TypeError(`Interface cannot be directly invoked.`)
+			throw TypeError(`Interface cannot be directly invoked`)
 		}
 	};
 
@@ -160,15 +160,15 @@ class Property {
 		};
 
 		if (! this.is){
-			throw Error(`No accessor defined for ${this.name}. Use {is:"rw"} or {is:"ro"}.`);
+			throw Error(`No accessor defined for ${this.name}, use {is:"rw"} or {is:"ro"}`);
 		};
 
 		if (! ['ro', 'rw'].includes(this.is)){
-			throw Error(`Bas accessor for ${this.name}. Use {is:"rw"} or {is:"ro"}.`)
+			throw Error(`Bas accessor for ${this.name}, use {is:"rw"} or {is:"ro"}`)
 		};
 
 		if (!('isa' in details)){
-			throw Error(`No type defined for ${this.name}. Please use {isa:Object} to accept any class.`);
+			throw Error(`No type defined for ${this.name}, please use {isa:Object} to accept any class`);
 		};
 
 		if (Array.isArray(this.isa)){
@@ -208,7 +208,7 @@ class Property {
 
 	checkDelete(obj){
 		if (this.required){
-			throw Error(`Cannot delete required property "${this.name}" in class "${className(obj)}"`);
+			throw Error(`Cannot delete required property "${this.name}" of class "${className(obj)}"`);
 		};
 	};
 
@@ -257,7 +257,7 @@ const defineClass = function(options){
 		if (options.final){
 			for (const key in initialValues){
 				if (!(key in this)){
-					throw Error(`Unknown paramater "${key}" passed to "${className(this)}" `);
+					throw Error(`Unknown paramater "${key}" passed to "${className(this)}"`);
 				};
 			}
 		};
