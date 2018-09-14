@@ -2,8 +2,8 @@
 
 const tests = [
 	'classes.js',
-	'appointment_test.js',
 	'object_members.js',
+	'triggers.js',
 	'undefined.js',
 	'does_it_play_nice.js',
 	'interface.js',

@@ -1,5 +1,16 @@
 'use strict';
 
+const green = 92, red = 91, blue = 93
+
+function colourText(text, colour){
+	return `\x1b[${colour}m${text}\x1b[0m`;
+}
+
+const greenSuccess = colourText("success", green),
+	  redFail = colourText("fail", red);
+
+const padTo = Math.min(process.stdout.columns - 18, 128);
+
 class SubTest {
 
 	constructor(){
@@ -7,20 +18,24 @@ class SubTest {
 	}
 
 	result_message(message, result){
-		const padTo = 128;
 		const messageTag = `${this.count++}:`.padEnd(4)
-		const resultText = result ? `\x1b[92m success \x1b[0m` : `\x1b[91m fail \x1b[0m`
-		console.log("\t", messageTag, message.padEnd(padTo), resultText)
+		message = message.padEnd(padTo)
+		const resultText = result ? greenSuccess : redFail
+		console.log("    ", messageTag, message, resultText)
 	}
 
-	check_exception(name, code){
+	check_exception(name, expected_message, code){
 		try {
 			code();
 		} catch (e){
-			this.result_message(name + " successfully threw: "+ e.message, true);
+			if (e.message == expected_message){
+				this.result_message(name, true);
+			} else {
+				this.result_message(name + " actually threw: "+ e.message, false);
+			};
 			return;
 		}
-		this.result_message(name, false);
+		this.result_message(name +" : didn't throw an error", false);
 	}
 
 	check_safe(name, code){

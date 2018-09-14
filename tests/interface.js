@@ -31,8 +31,17 @@ Test.section("Basic interface tests", (test) => {
 	const lucy  = new Person();
 	const john  = new Person();
 	
-	test.check_exception("Should not be able to instanciate Interface", () => new CanWalk());
-	test.check_exception("Should not be able to instanciate Dog without CanTalk", () => new Dog());
+	test.check_exception(
+		"Should not be able to instanciate Interface",
+		'Interface cannot be directly invoked',
+		() => new CanWalk()
+	);
+
+	test.check_exception(
+		"Should not be able to instanciate Dog without CanTalk",
+		'Interface member "walk" not defined in "Dog"',
+		() => new Dog()
+	);
 });
 
 Test.section("Moose interface tests", (test) => {
@@ -71,7 +80,12 @@ Test.section("Moose interface tests", (test) => {
 	}
 
 	test.check_safe("Valid class instanciates", () =>  new CheckingAccount({ name:"myAccount" }));
-	test.check_exception("Invalid class fails", () =>  new InvalidAccount({ name:"myAccount" }));
+
+	test.check_exception(
+		"Invalid class fails",
+		'Property "name" of "InvalidAccount" must be type "String" to conform to interface',
+		() =>  new InvalidAccount({ name:"myAccount" })
+	);
 
 });
 

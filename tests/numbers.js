@@ -19,6 +19,11 @@ Test.section("Casting to numbers", (test) => {
 	bob.grades.push("2");
 
 	test.check_true("All elements should be of type Number", () => bob.grades.find((grade) => grade instanceof Number) == bob.grades.length);
-	test.check_exception("Exception thrown when invalid number is set", () => bob.grades[2] = {a:1});
+
+	test.check_exception(
+		"Exception thrown when invalid number is set",
+		'"[object Object]" cannot be converted to a number',
+		() => bob.grades[2] = {a:1}
+	);
 
 })

@@ -37,6 +37,11 @@ Test.section("Does MooseJS play nice", (test) => {
 	test.check_true("Is the class inherited from base", instance instanceof NormalBase);
 	test.check_true("Was base member set correctly", instance.foo == 1);
 	test.check_true("Was child member set correctly", instance.baz == 3);
-	test.check_exception("Cannot set Moose class member", () => { instance.bar = 22 });
+
+	test.check_exception(
+		"Cannot set Moose class member",
+		'Property "bar" of "NormalChild" is read only',
+		() => { instance.bar = 22 }
+	);
 })
 

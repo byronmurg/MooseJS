@@ -88,13 +88,35 @@ Test.section("Invalid operations", (test) => {
 	const testina = new Person({ name:"Testina", dob:"1987-06-28" }) ;
 	testina.name += " McTesterson";
 
-	test.check_exception("Pushing invalid Doggo", () => testina.dogs.push({ name:"Mable", type:"rabbit" }));
-	test.check_exception("Setting invalid property", () => testina.cuteness = 10)
+	test.check_exception(
+		"Pushing invalid Doggo",
+		'Unknown paramater "type" passed to "Doggo"',
+		() => testina.dogs.push({ name:"Mable", type:"rabbit" })
+	);
 
-	test.check_exception("Unsetting required name", () => testina.name = undefined);
-	test.check_exception("Deleting required name", () => delete testina.name);
+	test.check_exception(
+		"Setting invalid property",
+		'No such property "cuteness" of "Person"',
+		() => testina.cuteness = 10
+	);
 
-	test.check_exception("Setting ro date", () => testina.dob = new Date());
+	test.check_exception(
+		"Unsetting required name",
+		'Property "name" of "Person" required',
+		() => testina.name = undefined
+	);
+
+	test.check_exception(
+		"Deleting required name",
+		'Cannot delete required property "name" of class "Person"',
+		() => delete testina.name
+	);
+
+	test.check_exception(
+		"Setting ro date",
+		'Property "dob" of "Person" is read only',
+		() => testina.dob = new Date()
+	);
 })
 
 
