@@ -57,7 +57,7 @@ function TypedArray(type){
 		},
 	};
 
-	return function(values){
+	const ArrayClass = function(values){
 		values = values || [];
 
 		if (! Array.isArray(values)){
@@ -68,6 +68,10 @@ function TypedArray(type){
 
 		return new Proxy(values, accessors);
 	};
+
+	ArrayClass.__data_type = type;
+
+	return ArrayClass;
 };
 
 function createClass(construct, parent){

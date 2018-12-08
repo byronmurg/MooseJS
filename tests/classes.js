@@ -17,6 +17,10 @@ Test.section("TypedArray(Date)", (test) => {
 })
 
 
+Test.section("TypedArray.__data_type", (test) => {
+	const DateArray = new MooseJS.TypedArray(Date);
+	test.check_true("new class attribute __data_type is Date", DateArray.__data_type == Date);
+})
 
 class Mammal extends MooseJS.defineClass({
 	has: {
