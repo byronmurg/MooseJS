@@ -77,7 +77,7 @@ const evilBob = new Student( JSON.parse( JSON.stringify( bob ) ) )
 ### Typed Arrays
 
 ```js
-const DateArray = new MooseJS.TypedArray(String)
+const DateArray = new MooseJS.TypedArray(Date)
 
 const birthdays = new DateArray(['1982-05-20'])           // Converted.
 birthdays.push('2011-09-12T21:25:41')                     // Yep this too.
