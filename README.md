@@ -9,7 +9,7 @@ $ npm install moosejs
 ## Features
 * Statically typed classes
   * Quick type and consistency checking
-  * Trigger system provides
+  * Trigger system provides event based logic
   * Serialize and de-serialize object structures quickly
   * Property type casting
 * Typed arrays
