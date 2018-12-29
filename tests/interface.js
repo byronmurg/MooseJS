@@ -4,6 +4,18 @@
 const MooseJS = require('../Moose.js');
 const Test = require('./testLib.js');
 
+Test.section("Interface sanity tests", (test) => {
+	test.check_safe("Can define interface", () => 
+		MooseJS.defineInterface({ members:["test"] })
+	)
+
+	test.check_safe("Can inherit interface", () => {
+		const TestInterface = MooseJS.defineInterface({ members:["somemember"] });
+
+		class SanityClass extends TestInterface {}
+	})
+})
+
 Test.section("Basic interface tests", (test) => {
 
 	const CanWalk = MooseJS.defineInterface({
@@ -89,3 +101,17 @@ Test.section("Moose interface tests", (test) => {
 
 });
 
+Test.section("Async method tests", (test) => {
+	
+	const StorageInt = MooseJS.defineInterface({
+		members: [ "save" ],
+	});
+
+	class Bucket extends StorageInt {
+		async save(obj){
+			console.log("Would save the object")
+		}
+	}
+
+	test.check_safe("Can instantiate class", () => new Bucket())
+})

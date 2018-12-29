@@ -102,7 +102,7 @@ function defineInterface(options){
 		};
 
 		for (const member of members){
-			if (! obj.__proto__[member] || obj.__proto__[member].constructor != Function){
+			if (! (obj.__proto__[member] && obj.__proto__[member].constructor instanceof Function)){
 				throw TypeError(`Interface member "${member}" not defined in "${className(obj)}"`);
 			}
 		};
