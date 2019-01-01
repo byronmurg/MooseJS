@@ -149,7 +149,7 @@ class Property {
 	constructor(name, details){
 		this.name       = name;
 		this.is         = details.is;
-		this.isa        = details.isa || Object;
+		this.isa        = details.isa;
 		this.required   = details.required;
 		this.default    = details.default;
 		this.enumerable = details.enumerable;
@@ -168,7 +168,7 @@ class Property {
 		};
 
 		if (! ['ro', 'rw'].includes(this.is)){
-			throw Error(`Bas accessor for ${this.name}, use {is:"rw"} or {is:"ro"}`)
+			throw Error(`Bad accessor for ${this.name}, use {is:"rw"} or {is:"ro"}`)
 		};
 
 		if (!('isa' in details)){
