@@ -22,7 +22,7 @@ Test.section("Casting to numbers", (test) => {
 
 	test.check_exception(
 		"Exception thrown when invalid number is set",
-		'"[object Object]" cannot be converted to a number',
+		'Object cannot be converted to a number',
 		() => bob.grades[2] = {a:1}
 	);
 

@@ -8,7 +8,7 @@ Test.section("Paramater isa 'undefined'", (test) => {
 
 	class Thingy extends MooseJS.defineClass({
 		has: {
-			stuff: { is:"rw", isa:undefined },
+			stuff:{ is:"rw" },
 		}
 	})
 	{}
@@ -24,6 +24,6 @@ Test.section("Paramater isa 'undefined'", (test) => {
 
 	thing.has = 3;
 
-	test.check_true("Memeber is now a Number", thing.has == 3);
+	test.check_true("Member is now a Number", thing.has == 3);
 })
 

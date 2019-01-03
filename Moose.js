@@ -30,7 +30,7 @@ function castTo(type, value){
 			throw Error(`Cannot convert ${valueType} to Array`);
 		case Number:
 			if (isNaN(value)){
-				throw TypeError(`"${value}" cannot be converted to a number`);
+				throw TypeError(`${valueType} cannot be converted to a number`);
 			};
 			//Fallthrough
 		default:
@@ -149,7 +149,7 @@ class Property {
 	constructor(name, details){
 		this.name       = name;
 		this.is         = details.is;
-		this.isa        = details.isa;
+		this.isa        = details.isa || Object;
 		this.required   = details.required;
 		this.default    = details.default;
 		this.enumerable = details.enumerable;
@@ -165,10 +165,6 @@ class Property {
 
 		if (! this.is){
 			throw Error(`No accessor defined for ${this.name}, use {is:"rw"} or {is:"ro"}`);
-		};
-
-		if (! this.isa){
-			throw Error(`No type defined for ${this.name}, please use {isa:Object} to accept any class`);
 		};
 
 		if (! ['ro', 'rw'].includes(this.is)){
@@ -188,7 +184,7 @@ class Property {
 	};
 
 	getDefault(){
-		return (this.default instanceof Function && this.isa != Function)
+		return (this.default instanceof Function)
 			? this.default()
 			: this.default;
 	};
@@ -301,7 +297,12 @@ const defineClass = function(options){
 			delete obj[prop];
 
 			if (property){
-				property.runTrigger(this, undefined, oldValue);
+				try {
+					property.runTrigger(obj, undefined, oldValue);
+				} catch (e){
+					obj[prop] = oldValue;
+					throw e;
+				}
 			};
 			return true;
 		},
