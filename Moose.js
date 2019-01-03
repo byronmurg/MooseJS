@@ -30,8 +30,8 @@ function castTo(type, value){
 			throw Error(`Cannot convert ${valueType} to Array`);
 		case Number:
 			if (isNaN(value)){
-				throw TypeError(`"${value}" cannot be converted to a number`)
-			}
+				throw TypeError(`"${value}" cannot be converted to a number`);
+			};
 			//Fallthrough
 		default:
 			return (value instanceof type) ? value : new type(value);
@@ -85,9 +85,9 @@ function createClass(construct, parent){
 		: class {
 			constructor(...args){
 				return construct.call(this, ...args);
-			}	
+			}
 		};
-}
+};
 
 function defineInterface(options){
 	options = options || {};
@@ -104,7 +104,7 @@ function defineInterface(options){
 		for (const member of members){
 			if (! (obj.__proto__[member] && obj.__proto__[member].constructor instanceof Function)){
 				throw TypeError(`Interface member "${member}" not defined in "${className(obj)}"`);
-			}
+			};
 		};
 
 		const classProperties = obj.constructor.__class_properties || {};
@@ -130,8 +130,8 @@ function defineInterface(options){
 
 	function checkNotInvoked(obj){
 		if (obj.constructor == inter){
-			throw TypeError(`Interface cannot be directly invoked`)
-		}
+			throw TypeError(`Interface cannot be directly invoked`);
+		};
 	};
 
 	function construct(){
@@ -167,12 +167,12 @@ class Property {
 			throw Error(`No accessor defined for ${this.name}, use {is:"rw"} or {is:"ro"}`);
 		};
 
-		if (! ['ro', 'rw'].includes(this.is)){
-			throw Error(`Bad accessor for ${this.name}, use {is:"rw"} or {is:"ro"}`)
+		if (! this.isa){
+			throw Error(`No type defined for ${this.name}, please use {isa:Object} to accept any class`);
 		};
 
-		if (!('isa' in details)){
-			throw Error(`No type defined for ${this.name}, please use {isa:Object} to accept any class`);
+		if (! ['ro', 'rw'].includes(this.is)){
+			throw Error(`Bad accessor for ${this.name}, use {is:"rw"} or {is:"ro"}`);
 		};
 
 		if (Array.isArray(this.isa)){
@@ -195,15 +195,15 @@ class Property {
 
 	runTrigger(obj, value, oldValue){
 		if (this.trigger){
-			this.trigger(obj, value, oldValue, this.name)
-		}
+			this.trigger(obj, value, oldValue, this.name);
+		};
 	};
 
 	check(value, obj){
 		if (value == undefined){
 			if (this.required){
 				throw Error(`Property "${this.name}" of "${className(obj)}" required`);
-			}
+			};
 		} else {
 			value = this.cast(value);
 		};
@@ -228,7 +228,7 @@ class Property {
 			throw Error(`Property "${this.name}" of "${className(obj)}" is read only`);
 		};
 		return this.check(value, obj);
-	}
+	};
 };
 
 const defineClass = function(options){
@@ -272,7 +272,7 @@ const defineClass = function(options){
 			const property = allProperties[prop];
 			const oldValue = obj[prop];
 			if (property){
-				newValue = property.checkSet(newValue, obj)
+				newValue = property.checkSet(newValue, obj);
 			} else if (options.final){
 				throw Error(`No such property "${prop}" of "${className(obj)}"`);
 			};
@@ -290,7 +290,7 @@ const defineClass = function(options){
 
 			return true;
 		},
-		
+
 		deleteProperty(obj, prop){
 			const property = properties[prop];
 			const oldValue = obj[prop];
@@ -305,7 +305,7 @@ const defineClass = function(options){
 			};
 			return true;
 		},
-		
+
 		getOwnPropertyDescriptor(obj, prop){
 			const property = properties[prop];
 			return (! property)
@@ -317,7 +317,7 @@ const defineClass = function(options){
 	function construct(initialValues){
 		defineProperties.call(this, initialValues);
 		return new Proxy(this, accessors);
-	}
+	};
 
 	const newClass = createClass(construct, options.extends);
 	newClass.__class_properties = allProperties;
@@ -330,4 +330,4 @@ return { defineClass, TypedArray, defineInterface };
 
 if (typeof module === "object" && typeof module.exports === "object"){
 	module.exports = MooseJS;
-}
+};
