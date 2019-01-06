@@ -4,7 +4,7 @@
 const MooseJS = require('../Moose.js')
 const Test = require('./testLib.js');
 
-Test.section("Inheritance tests", (test) => {
+Test.section("Inheritance", (test) => {
 
 	class Parent extends MooseJS.defineClass({
 		has: {

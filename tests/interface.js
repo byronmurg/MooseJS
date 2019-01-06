@@ -4,7 +4,7 @@
 const MooseJS = require('../Moose.js');
 const Test = require('./testLib.js');
 
-Test.section("Interface sanity tests", (test) => {
+Test.section("Interface sanity", (test) => {
 	test.check_safe("Can define interface", () => 
 		MooseJS.defineInterface({ members:["test"] })
 	)
@@ -16,7 +16,7 @@ Test.section("Interface sanity tests", (test) => {
 	})
 })
 
-Test.section("Basic interface tests", (test) => {
+Test.section("Basic interface", (test) => {
 
 	const CanWalk = MooseJS.defineInterface({
 		members:['walk']
@@ -56,7 +56,7 @@ Test.section("Basic interface tests", (test) => {
 	);
 });
 
-Test.section("Moose interface tests", (test) => {
+Test.section("Moose interface", (test) => {
 	
 	const Account = MooseJS.defineInterface({
 		members: ['withdraw'],
@@ -101,7 +101,7 @@ Test.section("Moose interface tests", (test) => {
 
 });
 
-Test.section("Async method tests", (test) => {
+Test.section("Async method", (test) => {
 	
 	const StorageInt = MooseJS.defineInterface({
 		members: [ "save" ],
