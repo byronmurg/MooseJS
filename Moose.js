@@ -39,7 +39,7 @@ function castTo(type, value){
 };
 
 function className(obj){
-	return obj.constructor.name || 'unnamed class';
+	return obj.constructor.name || obj.constructor.__class_name || 'unnamed class';
 }
 
 function TypedArray(type){
@@ -70,6 +70,7 @@ function TypedArray(type){
 	};
 
 	ArrayClass.__data_type = type;
+	ArrayClass.__class_name = `TypedArray<${className(type)}>`;
 
 	return ArrayClass;
 };
@@ -322,6 +323,7 @@ const defineClass = function(options){
 
 	const newClass = createClass(construct, options.extends);
 	newClass.__class_properties = allProperties;
+	newClass.__class_name = options.name
 	return newClass;
 };
 
