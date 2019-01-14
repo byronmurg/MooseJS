@@ -101,6 +101,37 @@ Test.section("Moose interface", (test) => {
 
 });
 
+Test.section("Requirement satisfied by inherited classes", (test) => {
+	
+	class Person extends MooseJS.defineClass({
+		has:{
+			name:{ is:"ro", isa:String, required:true }
+		}
+	}){};
+
+	class Student extends MooseJS.defineClass({
+		final:true,
+		extends: Person
+	}){};
+
+	const Pet = MooseJS.defineInterface({
+		properties: {
+			humanFriend: Person,
+		}
+	});
+
+	class Doggo extends MooseJS.defineClass({
+		final: true,
+		extends: Pet,
+		has: {
+			humanFriend: { is:"ro", isa:Student, required:true },
+		}
+	}){};
+
+	test.check_safe("", () => new Doggo({ humanFriend: new Student({ name:"Byron" }) }));
+
+});
+
 Test.section("Async method", (test) => {
 	
 	const StorageInt = MooseJS.defineInterface({
