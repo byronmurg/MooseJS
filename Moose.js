@@ -28,6 +28,12 @@ function castTo(type, value){
 			return value;
 		case Array:
 			throw Error(`Cannot convert ${valueType} to Array`);
+		case Date:
+			value = new Date(value);
+			if (isNaN(value)){
+				throw TypeError(`${valueType} cannot be converted to a date`);
+			};
+			return value;
 		case Number:
 			if (isNaN(value)){
 				throw TypeError(`${valueType} cannot be converted to a number`);
@@ -39,6 +45,7 @@ function castTo(type, value){
 };
 
 function className(obj){
+	if (obj == undefined) return "undefined"
 	return obj.constructor.name || obj.constructor.__class_name || 'unnamed class';
 }
 
