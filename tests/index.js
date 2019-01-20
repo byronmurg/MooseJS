@@ -12,4 +12,5 @@ const tests = [
 	'inheritance.js',
 	'class_naming.js',
 	'dates.js',
+	'typed_array.js',
 ].map((t) => require(`./${t}`));

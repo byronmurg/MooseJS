@@ -1,6 +1,6 @@
 {
   "name": "moosejs",
-  "version": "1.2.2",
+  "version": "1.2.3",
   "description": "A postmodern object system for JavaScript",
   "main": "Moose.js",
   "scripts": {

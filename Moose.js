@@ -23,6 +23,10 @@ const MooseJS = (function(){
 function castTo(type, value){
 	const valueType = className(value);
 
+	if (value == undefined){
+		throw TypeError(`Value undefined`)
+	};
+
 	switch (type){
 		case value.constructor:
 			return value;
