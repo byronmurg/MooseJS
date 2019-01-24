@@ -128,7 +128,7 @@ Test.section("Requirement satisfied by inherited classes", (test) => {
 		}
 	}){};
 
-	test.check_safe("", () => new Doggo({ humanFriend: new Student({ name:"Byron" }) }));
+	test.check_safe("Class can be instanciated", () => new Doggo({ humanFriend: new Student({ name:"Byron" }) }));
 
 });
 

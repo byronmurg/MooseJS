@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 
 const tests = [
-	'classes.js',
-	'object_members.js',
-	'triggers.js',
-	'defaults.js',
-	'undefined.js',
-	'does_it_play_nice.js',
-	'interface.js',
-	'numbers.js',
-	'inheritance.js',
-	'class_naming.js',
-	'dates.js',
-	'typed_array.js',
-].map((t) => require(`./${t}`));
+	'classes',
+	'object_members',
+	'triggers',
+	'defaults',
+	'undefined',
+	'does_it_play_nice',
+	'interface',
+	'numbers',
+	'inheritance',
+	'class_naming',
+	'dates',
+	'typed_array',
+	'typed_map',
+].map((t) => {
+	console.log(`[[[ ----- ${t} ----- ]]]`)
+	require(`./${t}.js`)
+});

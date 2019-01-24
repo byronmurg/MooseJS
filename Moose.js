@@ -86,6 +86,50 @@ function TypedArray(type){
 	return ArrayClass;
 };
 
+function TypedMap(options){
+	const {key, value} = options;
+
+	if (! key){
+		throw Error("No key type passed to TypedMap")
+	} else if (key.constructor != Function){
+		throw TypeError("key type must be a class")
+	}
+
+	if (! value){
+		throw Error("No value type passed to TypedMap")
+	} else if (value.constructor != Function){
+		throw TypeError("value type must be a class")
+	}
+
+	const MapClass = class extends Map {
+		constructor(input){
+			super([]);
+			if (Array.isArray(input)){
+				input.forEach((pair) => this.set(pair[0], pair[1]))
+			} else if (input.constructor == this.constructor){
+				input.forEach((v, k) => this.set(k, v))
+			} else {
+				for (const k in input){
+					const v = input[k];
+					this.set(k, v)
+				}
+			}
+		}
+		
+		set(k, v){
+			k = castTo(key, k);
+			v = castTo(value, v);
+			super.set(k, v)
+		}
+	};
+
+	MapClass.__data_type = value;
+	MapClass.__key_type = key;
+	MapClass.__class_name = `TypedMap<${className(key)},${className(value)}>`;
+
+	return MapClass;
+};
+
 function createClass(construct, parent){
 	return (parent)
 		? class extends parent {
@@ -338,7 +382,7 @@ const defineClass = function(options){
 	return newClass;
 };
 
-return { defineClass, TypedArray, defineInterface };
+return { defineClass, TypedArray, TypedMap, defineInterface };
 
 }());
 

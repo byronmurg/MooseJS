@@ -84,6 +84,20 @@ birthdays.push('2011-09-12T21:25:41')                     // Yep this too.
 birthdays[2] = 'Wed Sep 12 2018 21:25:41 GMT+0100 (BST)') // And this!
 ```
 
+### TypedMaps
+```js
+const NumberMap = new MooseJS.TypedMap({ key:String, value:Number })
+
+const numbers = new NumberMap({ one:1, two:"2" }) // Converted
+numbers.set("three", "3.0")                       // Also converted
+
+// Copy constructable
+const copyNumbers = new NumberMap(numbers)
+
+// And initialize from pairs
+const japaneseNumbers = new NumberMap([ ["一",1], ["二",2], ["三",3] ])
+```
+
 ### Interfaces
 
 ```js
