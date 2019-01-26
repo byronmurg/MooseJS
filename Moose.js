@@ -106,7 +106,7 @@ function TypedMap(options){
 			super([]);
 			if (Array.isArray(input)){
 				input.forEach((pair) => this.set(pair[0], pair[1]))
-			} else if (input.constructor == this.constructor){
+			} else if (input instanceof Map){
 				input.forEach((v, k) => this.set(k, v))
 			} else {
 				for (const k in input){

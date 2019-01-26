@@ -36,3 +36,19 @@ Test.section("Initializing from an Array", (test) => {
 
 	test.check_true("Second value has been cast correctly", () => dates.get("Testy").constructor == Date)
 })
+
+Test.section("Copying maps of different types", (test) => {
+	const StringMap = new MooseJS.TypedMap({ key:String, value:String })
+
+	const strings = new StringMap({ "one":1, "two":2 })
+
+	test.check_true("First element value is type String", () => strings.get("one").constructor == String)
+
+	const NumberMap = new MooseJS.TypedMap({ key:String, value:Number })
+
+	let numbers
+	test.check_safe("Number array can be initialized from string array", () => numbers = new NumberMap(strings))
+
+	test.check_true("First element value is type Number", () => numbers.get("one").constructor == Number)
+	test.check_true("First element value is 1", () => numbers.get("one") == 1)
+})
