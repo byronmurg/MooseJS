@@ -30,6 +30,8 @@ function castTo(type, value){
 	switch (type){
 		case value.constructor:
 			return value
+		case Buffer:
+			return Buffer.from(new String(value))
 		case Array:
 			throw Error(`Cannot convert ${valueType} to Array`)
 		case Date:
