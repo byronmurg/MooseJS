@@ -14,6 +14,7 @@ const tests = [
 	'dates',
 	'typed_array',
 	'typed_map',
+	'enums',
 ].map((t) => {
 	console.log(`[[[ ----- ${t} ----- ]]]`)
 	require(`./${t}.js`)
