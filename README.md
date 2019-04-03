@@ -141,3 +141,43 @@ class Employee extends MooseJS.defineClass({
 }
 
 ```
+
+### Enumerators
+
+```js
+const TextEditor = MooseJS.defineEnum([ "vim", "atom", "nano" ])
+
+new TextEditor("vim") // Fine
+new TextEditor("emacs") // Err. Invalid input
+```
+
+### Serialize
+MooseJS objects can be desribed with the serialize function.
+
+This is designed for creating self-describing interfaces.
+
+Note that this will check `required` if either `required: true`
+is set or the property has a default.
+```js
+
+MooseJS.serialize(Student)
+
+# Outputs:
+{
+  type: 'class',
+  name: 'Student',
+  properties: {
+    name: { isa: 'String', required: true },
+    dob: { isa: 'Date', required: true },
+    grades: {
+      isa: {
+        type: 'array',
+        name: 'TypedArray<Number>',
+        data_type: 'Number'
+      },
+      required: false
+    }
+  }
+}
+
+```

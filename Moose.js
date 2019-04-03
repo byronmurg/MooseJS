@@ -20,8 +20,17 @@
 
 const MooseJS = (function(){
 
+function className(obj){
+	return obj.name || obj.__class_name || 'unnamed class'
+}
+
+function objectClassName(obj){
+	if (obj == undefined) return "undefined"
+	return className(obj.constructor)
+}
+
 function castTo(type, value){
-	const valueType = className(value)
+	const valueType = objectClassName(value)
 
 	if (value == undefined){
 		throw TypeError(`Value undefined`)
@@ -50,11 +59,6 @@ function castTo(type, value){
 	}
 }
 
-function className(obj){
-	if (obj == undefined) return "undefined"
-	return obj.constructor.name || obj.constructor.__class_name || 'unnamed class'
-}
-
 function TypedArray(type){
 	if (Array.isArray(type) || type == Array){
 		throw TypeError("Cannot cast to TypedArray<Array>")
@@ -70,7 +74,7 @@ function TypedArray(type){
 		},
 	}
 
-	const ArrayClass = function(values){
+	return Object.assign(function(values){
 		values = values || []
 
 		if (! Array.isArray(values)){
@@ -80,13 +84,11 @@ function TypedArray(type){
 		values = values.map(function(value){ return castTo(type, value) })
 
 		return new Proxy(values, accessors)
-	}
-
-	ArrayClass.__moose_type = "array"
-	ArrayClass.__data_type = type
-	ArrayClass.__class_name = `TypedArray<${className(type)}>`
-
-	return ArrayClass
+	}, {
+		__moose_type:"array",
+		__data_type:type,
+		__class_name:`TypedArray<${className(type)}>`,
+	})
 }
 
 function TypedMap(options){
@@ -104,7 +106,7 @@ function TypedMap(options){
 		throw TypeError("value type must be a class")
 	}
 
-	const MapClass = class extends Map {
+	return Object.assign(class extends Map {
 		constructor(input){
 			super([])
 			if (Array.isArray(input)){
@@ -124,14 +126,12 @@ function TypedMap(options){
 			v = castTo(value, v)
 			super.set(k, v)
 		}
-	}
-
-	MapClass.__moose_type = "map"
-	MapClass.__data_type = value
-	MapClass.__key_type = key
-	MapClass.__class_name = `TypedMap<${className(key)},${className(value)}>`
-
-	return MapClass
+	}, {
+		__moose_type:"map",
+		__data_type:value,
+		__key_type:key,
+		__class_name:`TypedMap<${className(key)},${className(value)}>`,
+	})
 }
 
 function createClass(construct, parent){
@@ -163,7 +163,7 @@ function defineInterface(options){
 
 		for (const member of members){
 			if (! (obj.__proto__[member] && obj.__proto__[member].constructor instanceof Function)){
-				throw TypeError(`Interface member "${member}" not defined in "${className(obj)}"`)
+				throw TypeError(`Interface member "${member}" not defined in "${objectClassName(obj)}"`)
 			}
 		}
 
@@ -173,15 +173,15 @@ function defineInterface(options){
 			const classProperty = classProperties[property]
 
 			if (!classProperty){
-				throw Error(`Property "${property}" not defined in "${className(obj)}"`)
+				throw Error(`Property "${property}" not defined in "${objectClassName(obj)}"`)
 			}
 
 			if (!classProperty.required){
-				throw Error(`Property "${property}" is not required in "${className(obj)}" to conform to interface`)
+				throw Error(`Property "${property}" is not required in "${objectClassName(obj)}" to conform to interface`)
 			}
 
 			if (!(classProperty.isa == propertyType || classProperty.isa.prototype instanceof propertyType)){
-				throw TypeError(`Property "${property}" of "${className(obj)}" must be type "${propertyType.name}" to conform to interface`)
+				throw TypeError(`Property "${property}" of "${objectClassName(obj)}" must be type "${propertyType.name}" to conform to interface`)
 			}
 		}
 
@@ -240,10 +240,6 @@ class Property {
 		}
 	}
 
-	cast(value){
-		return castTo(this.isa, value)
-	}
-
 	getDefault(){
 		return (this.default instanceof Function)
 			? this.default()
@@ -256,35 +252,28 @@ class Property {
 		}
 	}
 
-	check(value, obj){
+	checkRequired(value, obj){
 		if (value == undefined){
 			if (this.required){
-				throw Error(`Property "${this.name}" of "${className(obj)}" required`)
+				throw Error(`Property "${this.name}" of "${objectClassName(obj)}" required`)
 			}
-		} else {
-			value = this.cast(value)
 		}
-		return value
+	}
+
+	checkInit(value){
+		return (value == undefined) ? this.getDefault() : value
 	}
 
 	checkDelete(obj){
 		if (this.required){
-			throw Error(`Cannot delete required property "${this.name}" of class "${className(obj)}"`)
+			throw Error(`Cannot delete required property "${this.name}" of class "${objectClassName(obj)}"`)
 		}
 	}
 
-	checkInitial(value, obj){
-		if (value == undefined){
-			value = this.getDefault()
-		}
-		return this.check(value, obj)
-	}
-
-	checkSet(value, obj){
+	checkSet(obj){
 		if (this.is == 'ro'){
-			throw Error(`Property "${this.name}" of "${className(obj)}" is read only`)
+			throw Error(`Property "${this.name}" of "${objectClassName(obj)}" is read only`)
 		}
-		return this.check(value, obj)
 	}
 }
 
@@ -307,7 +296,9 @@ const defineClass = function(options){
 
 		for (const propName in properties){
 			const property = properties[propName]
-			this[propName] = property.checkInitial(initialValues[propName], this)
+			const value = property.checkInit(initialValues[propName])
+			property.checkRequired(value)
+			this[propName] = value == undefined ? undefined : castTo(property.isa, value)
 		}
 
 		for (const propName in properties){
@@ -318,7 +309,7 @@ const defineClass = function(options){
 		if (options.final){
 			for (const key in initialValues){
 				if (!(key in this)){
-					throw Error(`Unknown paramater "${key}" passed to "${className(this)}"`)
+					throw Error(`Unknown paramater "${key}" passed to "${objectClassName(this)}"`)
 				}
 			}
 		}
@@ -329,9 +320,13 @@ const defineClass = function(options){
 			const property = allProperties[prop]
 			const oldValue = obj[prop]
 			if (property){
-				newValue = property.checkSet(newValue, obj)
+				property.checkSet(obj)
+				property.checkRequired(newValue, obj)
+				if (newValue != undefined){
+					newValue = castTo(property.isa, newValue)
+				}
 			} else if (options.final){
-				throw Error(`No such property "${prop}" of "${className(obj)}"`)
+				throw Error(`No such property "${prop}" of "${objectClassName(obj)}"`)
 			}
 
 			obj[prop] = newValue
@@ -389,12 +384,16 @@ const defineClass = function(options){
 }
 
 function defineEnum(posibilities, options = {}){
-	return Object.assign( class {
+	return Object.assign( class extends String {
 		constructor(input){
+			super(input)
 			if (! posibilities.includes(input)){
-				throw TypeError(`Invalid input "${input}" for ${className(this)}`)
+				throw TypeError(`Invalid input "${input}" for enum` + (options.name ? ` ${options.name}` : ""))
 			}
+
 		}
+		toBSON(){ return this.toString() }
+		toJSON(){ return this.toString() }
 	}, {
 		__moose_type:"enum",
 		__class_name:options.name,
@@ -402,7 +401,46 @@ function defineEnum(posibilities, options = {}){
 	})
 }
 
-return { defineClass, TypedArray, TypedMap, defineInterface, defineEnum }
+function serialize(c){
+	if (c == undefined){
+		return undefined
+	} else if (c.__moose_type) {
+		const ret = {
+			type: c.__moose_type,
+			name: className(c),
+		}
+
+        switch (c.__moose_type){
+			case "class":
+				const properties = {}
+				for (const k in c.__class_properties){
+					const prop = c.__class_properties[k]
+
+					properties[k] = { 
+						isa:serialize(prop.isa),
+						required:prop.required || (! 'default' in prop),
+					}
+				}
+				ret.properties = properties
+				break
+			case "map":
+				ret.key_type = serialize(c.__key_type)
+			case "array":
+				ret.data_type = serialize(c.__data_type)
+				break
+			case "enum":
+				ret.posibilities = c.__class_posibilities
+				break
+        }
+
+		return ret
+    } else {
+		return className(c)
+	}
+}
+
+
+return { defineClass, TypedArray, TypedMap, defineInterface, defineEnum, serialize }
 
 }())
 

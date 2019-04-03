@@ -10,7 +10,7 @@ Test.section("Enum test", (test) => {
 
 	test.check_exception(
 		"Incorrect value throws an exception",
-		'Invalid input "Goo" for unnamed class',
+		'Invalid input "Goo" for enum',
 		() => new Flavour("Goo")
 	);
 
