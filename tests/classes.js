@@ -75,6 +75,12 @@ Test.section("Invalid operations", (test) => {
 	testina.name += " McTesterson";
 
 	test.check_exception(
+		"Not setting required name",
+		'Property "name" of "Person" required',
+		() => new Person({ dob:"1066-01-20" })
+	);
+
+	test.check_exception(
 		"Pushing invalid Doggo",
 		'Unknown paramater "type" passed to "Doggo"',
 		() => testina.dogs.push({ name:"Mable", type:"rabbit" })
