@@ -19,6 +19,14 @@ Test.section("TypedArray(Date)", (test) => {
 	test.check_true("2nd element of dates array is a Date", dates[1].constructor == Date);
 
 	test.check_exception("Should throw exception when bad date is pushed", "String cannot be converted to a date", () => dates.push("bad date"))
+
+	test.check_safe("Should be able to pop from the back", () => dates.pop())
+
+	test.check_exception("Shouldn't be able to delete an element", "Cannot delete typed array elements", () => {
+		delete dates[0]
+	})
+
+	test.check_true("Same element should now be valid", () => !! dates[0])
 })
 
 
