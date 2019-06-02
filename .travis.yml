@@ -1,4 +1,8 @@
 language: node_js
+node_js:
+  - "10.15"
+  - "11.15"
+  - "12.3"
 sudo: false
 script:
   # Run test script
