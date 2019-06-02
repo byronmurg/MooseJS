@@ -68,11 +68,31 @@ function checkTypedArrayValueIsNotArray(type){
 function createBasicTypedArrayAccessors(type){
 	checkTypedArrayValueIsNotArray(type)
 	return {
-		set: function(obj, prop, value){
+		get(obj, prop){
+			if (prop == "shift"){
+				return function(){
+					for (let i = 0; i < this.length -1 ; i++){
+						obj[i] = obj[i+1]
+					}
+					this.length -= 1
+				}
+			} else if (prop == "pop") {
+				return function(){
+					this.length -= 1
+				}
+			} else {
+				return obj[prop]
+			}
+		},
+		set(obj, prop, value){
 			if (! isNaN(prop)){
 				value = castTo(type, value)
 			}
 			obj[prop] = value
+			return true
+		},
+		deleteProperty(obj, prop){
+			throw Error("Cannot delete typed array elements")
 			return true
 		},
 	}
@@ -83,38 +103,54 @@ function createAdvancedTypedArrayAccessors(input){
 	      isa = input.isa || input.value,
 	      trigger = input.trigger
 
-	return {
-		set: function(obj, prop, value){
-			if (! isNaN(prop)){
+	const accessors = createBasicTypedArrayAccessors(isa)
 
-				if (is != "rw"){
-					throw Error("Array is read-only")
-				}
+	accessors.set = (obj, prop, value) => {
+		if (! isNaN(prop)){
 
-				const newValue = castTo(isa, value),
-				      oldValue = obj[prop]
-
-				obj[prop] = newValue
-
-				if (trigger){
-					try {
-						trigger(obj, newValue, oldValue, prop)
-					} catch (e){
-						obj[prop] = oldValue
-
-						if (obj[obj.length - 1] == undefined){
-							obj.pop()
-						}
-
-						throw e
-					}
-				}
-			} else {
-				obj[prop] = value
+			if (is != "rw"){
+				throw Error("Array is read-only")
 			}
-			return true
-		},
+
+			const newValue = castTo(isa, value),
+			      oldValue = obj[prop]
+
+			obj[prop] = newValue
+
+			if (trigger){
+				try {
+					trigger(obj, newValue, oldValue, prop)
+				} catch (e){
+					obj[prop] = oldValue
+
+					if (obj[obj.length - 1] == undefined){
+						obj.pop()
+					}
+
+					throw e
+				}
+			}
+		} else if (prop == 'length') {
+			if (is != "rw"){
+				throw Error("Array is read-only")
+			}
+
+			const oldLength = obj[prop]
+			const oldValue = obj[oldLength - 1]
+			obj.length = value
+
+			if (oldLength > value){
+				if (trigger){
+					trigger(obj, undefined, oldValue, value)
+				}
+			}
+
+		} else {
+			obj[prop] = value
+		}
+		return true
 	}
+	return accessors
 }
 
 function deduceTypedArrayAccessors(input){
@@ -191,15 +227,39 @@ function TypedMap(options){
 				}
 			}
 		}
+
+		delete(k){
+			if (is == "ro"){
+				throw Error("Map is read-only")
+			}
+
+			const oldValue = this.get(k)
+			const existed = super.delete(k)
+
+			if (trigger){
+				try {
+					trigger(this, undefined, oldValue, k)
+				} catch (e){
+					super.set(k, oldValue)
+					throw e
+				}
+			}
+
+			return existed
+		}
 		
 		set(k, v){
 			if (is == "ro"){
 				throw Error("Map is read-only")
 			}
+
 			k = castTo(key, k)
 			v = castTo(value, v)
+
 			const oldValue = this.get(k)
+
 			super.set(k, v)
+
 			if (trigger){
 				try {
 					trigger(this, v, oldValue, k)
@@ -212,6 +272,7 @@ function TypedMap(options){
 					throw e
 				}
 			}
+			return this
 		}
 	}, {
 		__moose_type:"map",
