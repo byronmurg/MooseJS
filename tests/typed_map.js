@@ -52,3 +52,20 @@ Test.section("Copying maps of different types", (test) => {
 	test.check_true("First element value is type Number", () => numbers.get("one").constructor == Number)
 	test.check_true("First element value is 1", () => numbers.get("one") == 1)
 })
+
+Test.section("TypedMap triggers", (test) => {
+	
+	function valueMustContainKey(value, key){
+		if (! value.includes(key)){
+			throw Error("Value must contain key")
+		}
+	}
+
+	const StringMap = new MooseJS.TypedMap({ key:String, value:String, trigger: (map, newValue, oldValue, key) => valueMustContainKey(newValue, key) })
+
+	const strings = new StringMap({ "hello":"hello world" })
+
+	test.check_exception("Cannot add a value that breaks the constraint", "Value must contain key", () => {
+		strings.set("greeting", "hellooo")
+	})
+})

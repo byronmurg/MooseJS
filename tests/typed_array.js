@@ -26,3 +26,55 @@ Test.section("TypedArray.__data_type", (test) => {
 	const DateArray = new MooseJS.TypedArray(Date);
 	test.check_true("new class attribute __data_type is Date", DateArray.__data_type == Date);
 })
+
+Test.section("TypedArray triggers", (test) => {
+
+	function numberMustBeLessThanTen(n){
+		if (n >= 10){
+			throw Error("Number must be less than 10")
+		}
+	}
+
+	const NumberArray = new MooseJS.TypedArray({ value:Number, is:"rw", trigger:(array, newValue) => numberMustBeLessThanTen(newValue) })
+
+	const numberArray = new NumberArray([1,2,3])
+
+	test.check_exception("Should throw an exception when breaking the trigger", "Number must be less than 10", () => {
+		numberArray.push(20)
+	})
+
+	test.check_true("Should have reverted to pre-change", () => numberArray.length == 3)
+
+	test.check_exception("Should throw an exception when breaking the trigger in initialization", "Number must be less than 10", () => {
+		new NumberArray([ 100, 200, 300 ])
+	})
+})
+
+Test.section("Shorthand syntax", (test) => {
+
+	const Foo = MooseJS.defineClass({
+		final: true,
+		has: {
+			numbers: { is:"ro", isa:[Number], required:true },
+		},
+	})
+
+	const foo = new Foo({ numbers:[1,2,3] })
+
+	test.check_exception("Shorthand declaired TypedArray<Number> is now read-only", "Array is read-only", () => {
+		foo.numbers.push(4)
+	})
+
+	const Bar = MooseJS.defineClass({
+		final: true,
+		has: {
+			numbers: { is:"rw", isa:[Number], required:true },
+		},
+	})
+
+	const bar = new Bar({ numbers:[1,2,3] })
+
+	test.check_safe("Shorthand declaired TypedArray<Number> is not read-only", () => {
+		bar.numbers.push(4)
+	})
+})
