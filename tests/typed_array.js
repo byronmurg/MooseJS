@@ -48,6 +48,36 @@ Test.section("TypedArray triggers", (test) => {
 	test.check_exception("Should throw an exception when breaking the trigger in initialization", "Number must be less than 10", () => {
 		new NumberArray([ 100, 200, 300 ])
 	})
+
+
+	const MinimumArray = new MooseJS.TypedArray({
+		isa:Number,
+		is:"rw",
+		trigger(array){
+			if (array.length < 5){
+				throw Error("Too few!")
+			}
+		}
+	})
+
+	test.check_safe("Array with minimum length can be initialized", () => {
+		new MinimumArray([1,2,3,4,5])
+	})
+
+	test.check_exception("Array with minimum length cannot be initialized with too few elements", "Too few!", () => {
+		new MinimumArray([1,2,3,4])
+	})
+
+	test.check_exception("Array with minimum length cannot be reduced with pop", "Too few!", () => {
+		const a = new MinimumArray([1,2,3,4,5])
+		a.pop()
+	})
+
+	test.check_exception("Array with minimum length cannot be reduced with shift", "Too few!", () => {
+		const a = new MinimumArray([1,2,3,4,5])
+		a.shift()
+	})
+
 })
 
 Test.section("Shorthand syntax", (test) => {
