@@ -59,12 +59,15 @@ function castTo(type, value){
 	}
 }
 
-function TypedArray(type){
+function checkTypedArrayValueIsNotArray(type){
 	if (Array.isArray(type) || type == Array){
 		throw TypeError("Cannot cast to TypedArray<Array>")
 	}
+}
 
-	const accessors = {
+function createBasicTypedArrayAccessors(type){
+	checkTypedArrayValueIsNotArray(type)
+	return {
 		set: function(obj, prop, value){
 			if (! isNaN(prop)){
 				value = castTo(type, value)
@@ -73,7 +76,71 @@ function TypedArray(type){
 			return true
 		},
 	}
+}
 
+function createAdvancedTypedArrayAccessors(input){
+	const is = input.is || "ro",
+	      isa = input.isa || input.value,
+	      trigger = input.trigger
+
+	return {
+		set: function(obj, prop, value){
+			if (! isNaN(prop)){
+
+				if (is != "rw"){
+					throw Error("Array is read-only")
+				}
+
+				const newValue = castTo(isa, value),
+				      oldValue = obj[prop]
+
+				obj[prop] = newValue
+
+				if (trigger){
+					try {
+						trigger(obj, newValue, oldValue, prop)
+					} catch (e){
+						obj[prop] = oldValue
+
+						if (obj[obj.length - 1] == undefined){
+							obj.pop()
+						}
+
+						throw e
+					}
+				}
+			} else {
+				obj[prop] = value
+			}
+			return true
+		},
+	}
+}
+
+function deduceTypedArrayAccessors(input){
+	if (input instanceof Function){
+		return createBasicTypedArrayAccessors(input)
+	} else if ("object" == typeof input) {
+		return createAdvancedTypedArrayAccessors(input)
+	} else {
+		throw Error("Incorrect TypedArray specifier. Must be Function or Object")
+	}
+}
+
+function deduceTypedArrayType(input){
+	if ("object" == typeof input) {
+		return input.isa || input.value
+	} else {
+		return input
+	}
+}
+
+function TypedArray(input){
+
+	const accessors = deduceTypedArrayAccessors(input)
+	const type = deduceTypedArrayType(input)
+	const trigger = input.trigger || function(){}
+	
 	return Object.assign(function(values){
 		values = values || []
 
@@ -81,18 +148,22 @@ function TypedArray(type){
 			throw TypeError("Non array passed")
 		}
 
-		values = values.map(function(value){ return castTo(type, value) })
+		values = values.map(function(value, i){
+			value = castTo(type, value)
+			trigger(values, value, undefined, i)
+			return value
+		})
 
 		return new Proxy(values, accessors)
 	}, {
 		__moose_type:"array",
-		__data_type:type,
+		__data_type: type,
 		__class_name:`TypedArray<${className(type)}>`,
 	})
 }
 
 function TypedMap(options){
-	const {key, value} = options
+	const {key, value, is, trigger} = options
 
 	if (! key){
 		throw Error("No key type passed to TypedMap")
@@ -122,9 +193,25 @@ function TypedMap(options){
 		}
 		
 		set(k, v){
+			if (is == "ro"){
+				throw Error("Map is read-only")
+			}
 			k = castTo(key, k)
 			v = castTo(value, v)
+			const oldValue = this.get(k)
 			super.set(k, v)
+			if (trigger){
+				try {
+					trigger(this, v, oldValue, k)
+				} catch (e){
+					if (oldValue == undefined){
+						super.delete(k)
+					} else {
+						super.set(k, oldValue)
+					}
+					throw e
+				}
+			}
 		}
 	}, {
 		__moose_type:"map",
@@ -236,7 +323,10 @@ class Property {
 			if (this.isa.length != 1){
 				throw TypeError(`Invalid array type for ${this.name}!`)
 			}
-			this.isa = new TypedArray(this.isa[0])
+			this.isa = new TypedArray({
+				is:this.is,
+				isa:this.isa[0],
+			})
 		}
 	}
 
