@@ -8,7 +8,7 @@ Test.section("Casting to numbers", (test) => {
 	class Student extends MooseJS.defineClass({
 		final: true,
 		has:{
-			grades: { is:"ro", isa:[Number], required:true, default:[] },
+			grades: { is:"rw", isa:[Number], required:true, default:[] },
 		}
 	})
 	{}
