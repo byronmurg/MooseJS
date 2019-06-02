@@ -1,6 +1,8 @@
 # MooseJS
 A postmodern object system for JavaScript
 
+[![Coverage Status](https://coveralls.io/repos/github/byronmurg/MooseJS/badge.svg?branch=master)](https://coveralls.io/github/byronmurg/MooseJS?branch=master)
+
 ## Install
 ```sh
 $ npm install moosejs
