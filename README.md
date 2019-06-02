@@ -98,50 +98,6 @@ const copyNumbers = new NumberMap(numbers)
 const japaneseNumbers = new NumberMap([ ["一",1], ["二",2], ["三",3] ])
 ```
 
-### Interfaces
-
-```js
-const Account = MooseJS.defineInterface({
-    members: ["withdraw"]
-})
-
-class DummyAccount extends Account {
-    withdraw(amount){
-        console.debug("I'm just a dummy :(")
-    }
-};
-
-
-const dummy  = new DummyAccount() // OK passes interface
-// Class doesn't need to be checked twice thanks to caching.
-const dummy2 = new DummyAccount()
-
-
-const Person = MooseJS.defineInterface({
-    members: ['sayHi'],
-    properties: {
-        dateOfBirth: Date,
-    }
-})
-
-class Employee extends MooseJS.defineClass({
-    extends: Person,
-    final:true,
-    has: {
-        name:        { is:"rw", isa:String, required:true },
-         // This fulfills Person dateOfBirth requirement due
-         // to being a required Date of the correct name.
-        dateOfBirth: { is:"ro", isa:Date,   required:true },
-    }
-})
-{
-    sayHi(){
-        return `Hello I'm ${this.name}`;
-    }
-}
-
-```
-
 ### Enumerators
 
 ```js
