@@ -1,7 +1,9 @@
 # MooseJS
 A postmodern object system for JavaScript
 
-[![Coverage Status](https://coveralls.io/repos/github/byronmurg/MooseJS/badge.svg?branch=master)](https://coveralls.io/github/byronmurg/MooseJS?branch=master)
+[![Build status](https://api.travis-ci.com/byronmurg/MooseJS.svg?branch=master)]
+[![Licence](https://img.shields.io/github/license/byronmurg/MooseJS.svg)]
+[![Issues](https://img.shields.io/github/issues/byronmurg/MooseJS.svg)]
 
 ## Install
 ```sh
