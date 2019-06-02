@@ -32,6 +32,7 @@ class SubTest {
 				this.result_message(name, true);
 			} else {
 				this.result_message(name + " actually threw: "+ e.message, false);
+				console.error(e)
 			};
 			return;
 		}
