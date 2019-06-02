@@ -89,13 +89,13 @@ birthdays[2] = 'Wed Sep 12 2018 21:25:41 GMT+0100 (BST)') // And this!
 // Or for something more advanced
 
 const GradeArray = new MooseJS.TypedArray({
-	is: "ro", // Can't be changed after initialization
+    is: "ro", // Can't be changed after initialization
     isa: Number, // Must contain only numbers
     trigger: (array, newValue, oldValue, i) => {
-		if (array.length > 50){
-			throw Error("You can't have more than 50 grades")
-		}
-	}
+        if (array.length > 50){
+            throw Error("You can't have more than 50 grades")
+        }
+    }
 })
 
 const myGrades = new GradeArray([ 1.2, 4.2 ]) // Okay up to 50
@@ -107,15 +107,15 @@ myGrades.push(0.1) // Err. Read-only
 // 'is' property (but not triggers) will be delegated to the TypedArray
 
 const Foo = MooseJS.defineClass({
-	has: {
-		bar: { is:"rw", isa:[Number] }, // Equivelent to TypedArray({ is:"rw", isa:Number })
-		baz: { is:"ro", isa:[Number] }, // Equivelent to TypedArray({ is:"ro", isa:Number })
-	}
+    has: {
+        bar: { is:"rw", isa:[Number] }, // Equivelent to TypedArray({ is:"rw", isa:Number })
+        baz: { is:"ro", isa:[Number] }, // Equivelent to TypedArray({ is:"ro", isa:Number })
+    }
 })
 
 const foo = new Foo({
-	bar: [1,2,3],
-	baz: [4,5,6],
+    bar: [1,2,3],
+    baz: [4,5,6],
 })
 
 foo.bar.push("4") // Okay !
@@ -139,14 +139,14 @@ const japaneseNumbers = new NumberMap([ ["一",1], ["二",2], ["三",3] ])
 // Or something a bit smarter
 
 const FriendScores = new MooseJS.TypedMap({
-	is: "rw",      // Can be changed after initialization
+    is: "rw",      // Can be changed after initialization
     value: Number, // Values must be numbers
-	key: String,   // Keys must be strings
+    key: String,   // Keys must be strings
     trigger: (map, newValue, oldValue, key) => {
-		if (map.values().reduce((l,r) => l+r) > 20){
-			throw Error("That's too many friends")
-		}
-	}
+        if (map.values().reduce((l,r) => l+r) > 20){
+            throw Error("That's too many friends")
+        }
+    }
 })
 
 ```
