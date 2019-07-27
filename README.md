@@ -161,12 +161,12 @@ new TextEditor("emacs") // Err. Invalid input
 ```
 
 ### Serialize
-MooseJS objects can be desribed with the serialize function.
+MooseJS objects can be described with the serialize function.
 
 This is designed for creating self-describing interfaces.
 
-Note that this will check `required` if either `required: true`
-is set or the property has a default.
+Note that this will check `required` if `required: true` is
+set and the property has no default.
 ```js
 
 MooseJS.serialize(Student)
