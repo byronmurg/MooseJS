@@ -10,6 +10,7 @@ Test.section("Inheritance", (test) => {
 		has: {
 			permissive:{ is:"rw", isa:Number },
 			strict:    { is:"ro", isa:Number, required:true },
+			requiredWithDefault: { is:"ro", isa:Number, required:true, default:5 },
 		}
 	})
 	{}
@@ -25,5 +26,6 @@ Test.section("Inheritance", (test) => {
 
 	test.check_exception(`'strict' cannot be deleted`, `Cannot delete required property "strict" of class "Child"`, () => {delete child.strict});
 	test.check_safe(`'permissive' can be deleted`, () => {delete child.permissive});
+	test.check_true(`'requiredWithDefault' has been set correctly`, () => child.requiredWithDefault == 5)
 })
 
