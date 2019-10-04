@@ -43,6 +43,8 @@ function castTo(type, value){
 			return Buffer.from(new String(value))
 		case Array:
 			throw Error(`Cannot convert ${valueType} to Array`)
+		case Boolean:
+			return !!value
 		case Date:
 			value = new Date(value)
 			if (isNaN(value)){
