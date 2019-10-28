@@ -30,11 +30,15 @@ function objectClassName(obj){
 }
 
 function castTo(type, value){
-	const valueType = objectClassName(value)
-
 	if (value == undefined){
 		throw TypeError(`Value undefined`)
 	}
+
+	if (value instanceof type){
+		return value
+	}
+
+	const valueType = objectClassName(value)
 
 	switch (type){
 		case value.constructor:
@@ -57,7 +61,7 @@ function castTo(type, value){
 			}
 			//Fallthrough
 		default:
-			return (value instanceof type) ? value : new type(value)
+			return new type(value)
 	}
 }
 
@@ -593,7 +597,7 @@ function serialize(c){
 }
 
 
-return { defineClass, TypedArray, TypedMap, defineInterface, defineEnum, serialize }
+return { defineClass, TypedArray, TypedMap, defineInterface, defineEnum, serialize, castTo }
 
 }())
 
