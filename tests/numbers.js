@@ -18,7 +18,7 @@ Test.section("Casting to numbers", (test) => {
 	bob.grades.push(1);
 	bob.grades.push("2");
 
-	test.check_true("All elements should be of type Number", () => bob.grades.find((grade) => grade instanceof Number) == bob.grades.length);
+	test.check_true("All elements should be of type Number", () => bob.grades.filter((grade) => typeof(grade) == "number").length == bob.grades.length);
 
 	test.check_exception(
 		"Exception thrown when invalid number is set",

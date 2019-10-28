@@ -41,8 +41,8 @@ function castTo(type, value){
 	const valueType = objectClassName(value)
 
 	switch (type){
-		case value.constructor:
-			return value
+		case String:
+			return value.toString()
 		case Buffer:
 			return Buffer.from(new String(value))
 		case Array:
@@ -59,6 +59,7 @@ function castTo(type, value){
 			if (isNaN(value)){
 				throw TypeError(`${valueType} cannot be converted to a number`)
 			}
+			return 1* value
 			//Fallthrough
 		default:
 			return new type(value)
