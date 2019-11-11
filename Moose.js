@@ -575,6 +575,7 @@ function serialize(c){
 					const prop = c.__class_properties[k]
 
 					properties[k] = { 
+						is: prop.is,
 						isa:serialize(prop.isa),
 						required:prop.required || (! 'default' in prop),
 					}
