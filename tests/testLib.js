@@ -41,8 +41,9 @@ class SubTest {
 
 	check_safe(name, code){
 		try {
-			code();
+			const output = code();
 			this.result_message(name, true);
+			return output
 		} catch (e){
 			this.result_message(name, false);
 			throw e;
