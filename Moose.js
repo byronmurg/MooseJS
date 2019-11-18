@@ -363,8 +363,19 @@ function defineInterface(options){
 
 class Property {
 	constructor(name, details){
-		this.name       = name
-		this.is         = details.is
+		if (! name){
+			throw Error("No name defined for property")
+		}
+
+		this.name = name
+
+		if (details instanceof Function || Array.isArray(details)) 
+			details = { is:"ro", isa: details, required:true }
+		else if (details.constructor === Object){}
+		else throw TypeError("Malformed property details passed to "+ name)
+
+
+		this.is         = details.is  || "ro"
 		this.isa        = details.isa || Object
 		this.required   = details.required
 		this.default    = details.default
@@ -373,14 +384,6 @@ class Property {
 
 		if (this.enumerable == undefined){
 			this.enumerable = true
-		}
-
-		if (! this.name){
-			throw Error("No name defined for property")
-		}
-
-		if (! this.is){
-			throw Error(`No accessor defined for ${this.name}, use {is:"rw"} or {is:"ro"}`)
 		}
 
 		if (! ['ro', 'rw'].includes(this.is)){
