@@ -30,7 +30,7 @@ function objectClassName(obj){
 }
 
 function castTo(type, value){
-	if (value == undefined){
+	if (value === undefined){
 		throw TypeError(`Value undefined`)
 	}
 
@@ -601,8 +601,51 @@ function serialize(c){
 	}
 }
 
+function moosifyIfNotClass(input, name){
+	if (input instanceof Function){
+		return input
+	} else if (input instanceof Array){
+		if (input.length != 1) {
+			throw Error("Bad TypedArray specifier: Should be an array of length 1.")
+		}
+		return new TypedArray(input[0])
+	} else {
+		return defineClass({ name, final: true, has: input })
+	}
+}
 
-return { defineClass, TypedArray, TypedMap, defineInterface, defineEnum, serialize, castTo }
+function PromisifyOutput(output_class){
+	return async function(input){
+		input = await input
+		return castTo(output_class, input)
+	}
+}
+
+function Method(params){
+	const { body, input, output } = params
+
+	const input_class = moosifyIfNotClass(input, "input")
+
+	if (output){
+		const output_class = moosifyIfNotClass(output, "output")
+		const promise_output_class = PromisifyOutput(output_class)
+
+		return function(input){
+			input = castTo(input_class, input || {})
+			const body_output = body.apply(this, [input])
+			return body_output instanceof Promise
+				? promise_output_class(body_output)
+				: castTo(output_class, body_output)
+		}
+	} else {
+		return function(input){
+			input = castTo(input_class, input || {})
+			return body.apply(this, [input])
+		}
+	}
+}
+
+return { defineClass, TypedArray, TypedMap, defineInterface, defineEnum, serialize, castTo, method:Method, Method }
 
 }())
 

@@ -20,6 +20,8 @@ $ npm install moosejs
   * Ensure value and key type
 * Enumerators
   * Simple system for ensuring string content
+* Methods
+  * Runtime strictly-typed methods
 * No dependancies.
 
 ## Description
@@ -75,6 +77,32 @@ bob.name += " the 3rd" // Err. Read-only property.
 
 // Object can be fully serialized and parsed.
 const evilBob = new Student( JSON.parse( JSON.stringify( bob ) ) ) 
+```
+
+If that get's boring you can specify just the type for a
+short-hand decleration. Short-hand syntax properties are
+always 'required' and 'ro'.
+
+```js
+
+// These two are equivelent
+
+const Person = MooseJS.defineClass({
+	final: true,
+	has: {
+		name: { is:"ro", isa:String, required:true },
+	},
+})
+
+const Person = MooseJS.defineClass({
+	final: true,
+	has: {
+		name: String,
+	},
+})
+
+const Test = new Person({ name:"Testy McTesterson" })
+
 ```
 
 ### Typed Arrays
@@ -188,5 +216,68 @@ MooseJS.serialize(Student)
     }
   }
 }
+
+```
+
+### Methods
+
+MooseJS methods give you a way of guaranteeing the input
+(and output) types of a function.
+
+```js
+
+const multiply_by_four = MooseJS.method({
+	input: Number,
+	output: Number,
+	body: (input) => input *4,
+})
+
+// The following will throw a cast error!
+multiply_by_four("Wait, I'm not a number")
+
+```
+
+Methods can also be used in classes.
+
+```js
+
+class Student extends MooseJS.defineClass({
+    final: true,
+    has: {
+        name:   { is:"ro", isa:String,   required:true },
+        grades: { is:"rw", isa:[Number], required:true, default:[] },
+        school: { is:"rw", isa:School,   enumerable:false },
+    }
+})
+{
+	getGradesAbove = method({
+		input: Number,
+		output: [Number],
+		body: function(input){
+			this.grades.filter((grade) => grade >= input)
+		}
+	})
+}
+
+```
+
+Asynchronous functions work too. The types will be checked after
+the promise is resolved.
+
+```js
+
+const call_endpoint = MooseJS.method({
+	input: URL,
+	output: {
+		code: { isa: Number, default:200 },
+		body: { isa: String, default:"" },
+	},
+	body: async (url) => {
+		await some_fancy_request_function("GET", url)
+	}
+})
+
+call_endpoint("npmjs.org")
+	.then(({ body }) => console.log(body))
 
 ```

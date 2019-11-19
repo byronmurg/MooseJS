@@ -18,6 +18,7 @@ const tests = [
 	'buffers',
 	'serialize',
 	'short_hand',
+	'methods',
 ].map((t) => {
 	console.log(`[[[ ----- ${t} ----- ]]]`)
 	require(`./${t}.js`)
