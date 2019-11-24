@@ -58,7 +58,7 @@ class Student extends MooseJS.defineClass({
 })
 {
     get grade_average(){
-        return grades.reduce((a, b) => a + b) / grades.length
+        return this.grades.reduce((a, b) => a + b) / this.grades.length
     }
 }
 
@@ -240,8 +240,9 @@ multiply_by_four("Wait, I'm not a number")
 Methods can also be used in classes.
 
 ```js
+const { method, defineClass } = require('moosejs')
 
-class Student extends MooseJS.defineClass({
+class Student extends defineClass({
     final: true,
     has: {
         name:   { is:"ro", isa:String,   required:true },
@@ -254,7 +255,7 @@ class Student extends MooseJS.defineClass({
 		input: Number,
 		output: [Number],
 		body: function(input){
-			this.grades.filter((grade) => grade >= input)
+			return this.grades.filter((grade) => grade >= input)
 		}
 	})
 }
