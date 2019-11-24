@@ -459,7 +459,9 @@ const defineClass = function(options){
 			const property = properties[propName]
 			const value = property.checkInit(initialValues[propName])
 			property.checkRequired(value, this)
-			this[propName] = value == undefined ? undefined : castTo(property.isa, value)
+			if (value != undefined){
+				this[propName] = castTo(property.isa, value)
+			}
 		}
 
 		for (const propName in properties){
