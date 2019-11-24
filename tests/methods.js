@@ -91,3 +91,32 @@ Test.section("'Old' class methods", (test) => {
 
 	test.check_true("result is correct", () => 66 === aClass.someMeth(2))
 })
+
+
+Test.section("With moose classes", (test) => {
+	class Student extends MooseJS.defineClass({
+		final: true,
+		has: {
+			name:   { is:"ro", isa:String,   required:true },
+			grades: { is:"rw", isa:[Number], required:true, default:[] },
+		}
+	})
+	{
+		getGradesAbove = method({
+			input: Number,
+			output: [Number],
+			body: function(input){
+				return this.grades.filter((grade) => grade >= input)
+			}
+		})
+	}
+
+	test.check_safe("Can instanctiate", () => new Student({ name:"Testy" }))
+
+	const student = new Student({
+		name: "Testy McTesterson",
+		grades: [1, 2, 3]
+	})
+
+	test.check_true("Method output is correct", () => student.getGradesAbove(2).length == 2)
+})
