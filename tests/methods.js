@@ -120,3 +120,19 @@ Test.section("With moose classes", (test) => {
 
 	test.check_true("Method output is correct", () => student.getGradesAbove(2).length == 2)
 })
+
+Test.section("Method metadata", (test) => {
+	const test_method = method({
+		input: {
+			num: { isa:Number, required:true, default: 1},
+		},
+		output: Number,
+		body: ({num}) => num * 21,
+	})
+
+	test.check_true("result is correct", () => 210 === test_method({ num: 10 }))
+
+	test.check_true("input is a class", () => test_method.input instanceof Function)
+
+	test.check_true("input paramater has been cast as moose paramater", () => test_method.input.__class_properties.num.is == "ro")
+})

@@ -628,23 +628,30 @@ function Method(params){
 
 	const input_class = moosifyIfNotClass(input, "input")
 
+	let method;
+
 	if (output){
 		const output_class = moosifyIfNotClass(output, "output")
 		const promise_output_class = PromisifyOutput(output_class)
 
-		return function(input){
-			input = castTo(input_class, input || {})
-			const body_output = body.apply(this, [input])
+		method = function(body_input){
+			body_input = castTo(input_class, body_input || {})
+			const body_output = body.apply(this, [body_input])
 			return body_output instanceof Promise
 				? promise_output_class(body_output)
 				: castTo(output_class, body_output)
 		}
+		method.input = input_class
+		method.output = output_class
 	} else {
-		return function(input){
-			input = castTo(input_class, input || {})
-			return body.apply(this, [input])
+		method = function(body_input){
+			body_input = castTo(input_class, body_input || {})
+			return body.apply(this, [body_input])
 		}
+		method.input = input_class
 	}
+
+	return method
 }
 
 return { defineClass, TypedArray, TypedMap, defineInterface, defineEnum, serialize, castTo, method:Method, Method }
