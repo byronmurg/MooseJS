@@ -105,10 +105,22 @@ function createBasicTypedArrayAccessors(type){
 	}
 }
 
+function ArrayLengthChecks({ maximum = Infinity, minimum = 0 }) {
+	return function(values) {
+		if (values.length > maximum) {
+			throw Error("Array length greater than maximum "+ maximum)
+		} else if (values.length < minimum) {
+			throw Error("Array length fewer than minimum "+ minimum)
+		}
+	}
+}
+
 function createAdvancedTypedArrayAccessors(input){
 	const is = input.is || "ro",
 	      isa = input.isa || input.value,
 	      trigger = input.trigger
+
+	const lengthChecks = ArrayLengthChecks(input)
 
 	const accessors = createBasicTypedArrayAccessors(isa)
 
@@ -124,6 +136,8 @@ function createAdvancedTypedArrayAccessors(input){
 
 			obj[prop] = newValue
 
+			lengthChecks(obj)
+
 			if (trigger){
 				try {
 					trigger(obj, newValue, oldValue, prop)
@@ -137,6 +151,7 @@ function createAdvancedTypedArrayAccessors(input){
 					throw e
 				}
 			}
+
 		} else if (prop == 'length') {
 			if (is != "rw"){
 				throw Error("Array is read-only")
@@ -146,10 +161,11 @@ function createAdvancedTypedArrayAccessors(input){
 			const oldValue = obj[oldLength - 1]
 			obj.length = value
 
-			if (oldLength > value){
+			if (oldLength != value){
 				if (trigger){
 					trigger(obj, undefined, oldValue, value)
 				}
+				lengthChecks(obj)
 			}
 
 		} else {
@@ -183,6 +199,8 @@ function TypedArray(input){
 	const accessors = deduceTypedArrayAccessors(input)
 	const type = deduceTypedArrayType(input)
 	const trigger = input.trigger || function(){}
+
+	const lengthChecks = ArrayLengthChecks(input)
 	
 	return Object.assign(function(values){
 		values = values || []
@@ -190,6 +208,8 @@ function TypedArray(input){
 		if (! Array.isArray(values)){
 			throw TypeError("Non array passed")
 		}
+
+		lengthChecks(values)
 
 		values = values.map(function(value, i){
 			value = castTo(type, value)

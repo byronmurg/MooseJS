@@ -107,6 +107,21 @@ const Test = new Person({ name:"Testy McTesterson" })
 
 ### Typed Arrays
 
+Typed arrays allow you to create type strict arrays.
+
+Configurable properties include:
+is: "rw" for a mutable array or "ro" for an immutable array
+isa: Type type that each array member must be an instance of.
+maximum: Maximum length of the array
+minimum: Minimum length of the array
+trigger: A function to call when the array changes. If an error
+  thrown the array will revert to it's previous state.
+  Input arguments are:
+  - Full array post change.
+  - New value being added (or removed)
+  - Old value at this position in the array
+  - Index of the change in the array
+
 ```js
 const DateArray = new MooseJS.TypedArray(Date)
 
@@ -119,9 +134,11 @@ birthdays[2] = 'Wed Sep 12 2018 21:25:41 GMT+0100 (BST)') // And this!
 const GradeArray = new MooseJS.TypedArray({
     is: "ro", // Can't be changed after initialization
     isa: Number, // Must contain only numbers
+    minimum: 1,
     trigger: (array, newValue, oldValue, i) => {
-        if (array.length > 50){
-            throw Error("You can't have more than 50 grades")
+        const average = array.reduce((l, r) => l + r, 0) / array.length
+        if (average < 50){
+            throw Error("Grade average too low")
         }
     }
 })
