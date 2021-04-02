@@ -278,7 +278,7 @@ const call_endpoint = MooseJS.method({
 	}
 })
 
-call_endpoint("npmjs.org")
+call_endpoint("npmjs.com")
 	.then(({ body }) => console.log(body))
 
 ```
